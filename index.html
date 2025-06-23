@@ -1,195 +1,157 @@
 <!DOCTYPE html>
-<html lang="de" x-data="site()" x-init="init()" class="scroll-smooth bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800 font-inter text-gray-800 dark:text-gray-100">
+<html lang="de" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gundhollinger Badesee – Gemeinde Mining</title>
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/869/869869.png">
-  <!-- Tailwind CSS & Inter Font -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
-  <!-- Inter Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
-  <!-- Alpine.js -->
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Alpine.js für Interaktivität -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <!-- AOS -->
-  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
-  <script defer src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  
+  <style>
+    /* Scrollbar stilisieren */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background-color: rgba(100, 100, 100, 0.4); border-radius: 4px; }
+  </style>
 </head>
-<body :class="darkMode ? 'dark' : ''">
-<script>
-function site(){return{
-  darkMode: localStorage.getItem('dark')==='1',
-  mobileMenu:false, showTop:false, now:'', countdown:{days:0,hours:0,minutes:0,seconds:0},
-  init(){
-    this.now=new Date().toLocaleTimeString(); setInterval(()=>this.now=new Date().toLocaleTimeString(),1000);
-    window.addEventListener('scroll',()=>this.showTop=window.pageYOffset>200);
-    const target=new Date('2025-08-01T18:00:00'); setInterval(()=>{const diff=target-new Date(); this.countdown.days=Math.max(0,Math.floor(diff/86400000)); this.countdown.hours=Math.max(0,Math.floor(diff%86400000/3600000)); this.countdown.minutes=Math.max(0,Math.floor(diff%3600000/60000)); this.countdown.seconds=Math.max(0,Math.floor(diff%60000/1000));},1000);
-    AOS.init({duration:700,once:true});
-  },
-  toggleDark(){
-          this.darkMode = !this.darkMode;
-          localStorage.setItem('dark', this.darkMode ? '1' : '0');
-        },
-        scrollToTop(){
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-}};
-</script>
+<body x-data="{ mobileMenuOpen: false, darkMode: false }" :class="{ 'dark': darkMode }" class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
 
-<!-- Navbar -->
-<nav class="sticky top-0 z-50 bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg rounded-2xl p-4 shadow transition-transform hover:-translate-y-1">
-  <div class="max-w-6xl mx-auto flex items-center justify-between py-4 px-6">
-    <a href="#" class="text-2xl font-bold text-emerald-600 dark:text-emerald-300">🏖️ Badesee</a>
-    <div class="hidden md:flex items-center space-x-6">
-      <a href="#badesee" class="hover:text-emerald-500" data-aos="fade-down">Badesee</a>
-      <a href="#gemeinde" class="hover:text-emerald-500" data-aos="fade-down" data-aos-delay="50">Gemeinde</a>
-      <a href="#service" class="hover:text-emerald-500" data-aos="fade-down" data-aos-delay="100">Service</a>
-      <a href="#gallery" class="hover:text-emerald-500" data-aos="fade-down" data-aos-delay="150">Galerie</a>
-      <a href="#map" class="hover:text-emerald-500" data-aos="fade-down" data-aos-delay="200">Besuchen</a>
-      <span class="ml-6 text-sm" x-text="now"></span>
-      <button @click="toggleDark()" class="ml-4 p-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-        <span x-text="darkMode?'☀️':'🌙'"></span>
+  <!-- Dark Mode Toggle -->
+  <button @click="darkMode = !darkMode" class="fixed bottom-4 right-4 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg z-50">
+    <svg x-show="!darkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a.75.75 0 01.75.75V4a.75.75 0 01-1.5 0V2.75A.75.75 0 0110 2zm5.657 2.343a.75.75 0 011.06 1.06l-.884.884a.75.75 0 01-1.06-1.06l.884-.884zM18 9.25a.75.75 0 010 1.5h-1.25a.75.75 0 010-1.5H18zM15.657 14.657a.75.75 0 00-1.06 1.06l.884.884a.75.75 0 001.06-1.06l-.884-.884zM10 15a3 3 0 100-6 3 3 0 000 6zm-5.657-.343a.75.75 0 00-1.06 1.06l.884.884a.75.75 0 001.06-1.06l-.884-.884zM3 10.75a.75.75 0 000-1.5H1.75a.75.75 0 000 1.5H3zM4.343 5.343a.75.75 0 011.06 1.06l-.884.884a.75.75 0 01-1.06-1.06l.884-.884z"/></svg>
+    <svg x-show="darkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8 8 0 1010.586 10.586z"/></svg>
+  </button>
+
+  <!-- Navigation -->
+  <nav class="bg-white dark:bg-gray-800 shadow sticky top-0 z-40" x-data>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <a href="#" class="flex items-center text-2xl font-bold text-emerald-600 dark:text-emerald-300">
+        <span class="mr-2">🏖️</span>Badesee
+      </a>
+      <!-- Desktop Menu -->
+      <ul class="hidden md:flex space-x-6 text-sm">
+        <li><a href="#badesee" class="hover:text-emerald-500">Badesee</a></li>
+        <li><a href="#gemeinde" class="hover:text-emerald-500">Gemeinde</a></li>
+        <li><a href="#service" class="hover:text-emerald-500">Service</a></li>
+        <li><a href="#gallery" class="hover:text-emerald-500">Galerie</a></li>
+        <li><a href="https://www.google.com/maps?q=48.2720128625,13.193072811" target="_blank" class="hover:text-emerald-500">Besuchen</a></li>
+      </ul>
+      <!-- Mobile Hamburger -->
+      <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-md focus:outline-none focus:ring">
+        <svg x-show="!mobileMenuOpen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg x-show="mobileMenuOpen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
-    <button @click="mobileMenu=!mobileMenu" class="md:hidden p-2">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
-  </div>
-  <div x-show="mobileMenu" class="md:hidden section-card">
-    <nav class="flex flex-col space-y-2 px-6 py-4">
-      <a href="#badesee" class="block">Badesee</a>
-      <a href="#gemeinde" class="block">Gemeinde</a>
-      <a href="#service" class="block">Service</a>
-      <a href="#gallery" class="block">Galerie</a>
-      <a href="#map" class="block">Besuchen</a>
-      <div class="mt-4 flex items-center justify-between">
-        <span x-text="now"></span>
-        <button @click="toggleDark()" class="p-1 bg-gray-200 dark:bg-gray-700 rounded-full">
-          <span x-text="darkMode?'☀️':'🌙'"></span>
-        </button>
-      </div>
-    </nav>
-  </div>
-</nav>
-
-<!-- Hero -->
-<header class="relative h-screen bg-cover bg-center bg-no-repeat bg-center bg-fixed rounded-2xl p-4 shadow transition-transform hover:-translate-y-1" style="background-image:url('https://images.unsplash.com/photo-1627398242331-96d3ad1276f0');" data-aos="zoom-in">
-  <div class="absolute inset-0 bg-black/50"></div>
-  <div class="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-    <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4 animate-fade-in-down">Sommerliche Auszeit am<br><span class="text-emerald-300">Gundhollinger Badesee</span></h1>
-    <p class="text-lg text-gray-200 mb-6 animate-fade-in-up">Genieße Sonne, Spaß & Naturidylle in Mining.</p>
-    <div class="space-x-4">
-      <a href="#badesee" class="px-6 py-3 bg-emerald-500 text-white rounded-full font-semibold transition hover:bg-emerald-600" data-aos="fade-right" data-aos-delay="200">Jetzt entdecken</a>
-      <a href="#map" class="px-6 py-3 border border-white text-white rounded-full font-semibold transition hover:bg-white hover:text-gray-800" data-aos="fade-left" data-aos-delay="200">Besuchen</a>
+    <!-- Mobile Menu -->
+    <div x-show="mobileMenuOpen" x-transition class="md:hidden bg-white dark:bg-gray-800">
+      <ul class="px-6 pt-4 pb-6 space-y-4 text-lg">
+        <li><a href="#badesee" class="block">Badesee</a></li>
+        <li><a href="#gemeinde" class="block">Gemeinde</a></li>
+        <li><a href="#service" class="block">Service</a></li>
+        <li><a href="#gallery" class="block">Galerie</a></li>
+        <li><a href="https://www.google.com/maps?q=48.2720128625,13.193072811" target="_blank" class="block">Besuchen</a></li>
+      </ul>
     </div>
-  </div>
-</header>
+  </nav>
 
-<main class="max-w-5xl mx-auto py-16 space-y-20">
-  <!-- Öffnungszeiten -->
-  <section id="badesee" class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg rounded-2xl p-8 shadow-lg transition-transform hover:-translate-y-2" data-aos="fade-up">
-    <h2 class="text-3xl font-bold text-emerald-600 mb-4">🏖️ Öffnungszeiten & Preise</h2>
-    <div class="grid md:grid-cols-2 gap-8">
-      <div data-aos="fade-right">
-        <h3 class="text-xl font-semibold mb-2">Öffnungszeiten</h3>
-        <p>Täglich: <strong>08:00–21:00 Uhr</strong></p>
-        <p>Kiosk: <strong>10:00–18:00 Uhr</strong></p>
-      </div>
-      <div data-aos="fade-left">
-        <h3 class="text-xl font-semibold mb-2">Eintrittspreise</h3>
-        <ul class="list-disc list-inside space-y-1">
-          <li>Erwachsene: <strong>4 €</strong></li>
-          <li>Kinder: <strong>2 €</strong></li>
-          <li>Familienkarte: <strong>9 €</strong></li>
-          <li>Ab 18 Uhr gratis</li>
-        </ul>
+  <!-- Hero -->
+  <header class="relative h-screen bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1627398242331-96d3ad1276f0');">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="relative flex flex-col items-center justify-center h-full text-center px-4">
+      <h1 class="text-4xl sm:text-6xl font-extrabold text-white mb-4">Sommerliche Auszeit am<br><span class="text-emerald-300">Gundhollinger Badesee</span></h1>
+      <p class="text-lg text-gray-200 mb-8">Erlebe Sonne, Spaß &amp; Naturidylle in Mining, Bezirk Braunau am Inn.</p>
+      <div class="space-x-4">
+        <a href="#badesee" class="px-6 py-3 bg-emerald-500 text-white font-semibold rounded-full hover:bg-emerald-600 transition">Entdecken</a>
+        <a href="https://www.google.com/maps?q=48.2720128625,13.193072811" target="_blank" class="px-6 py-3 border border-white text-white font-semibold rounded-full hover:bg-white hover:text-gray-800 transition">Besuchen</a>
       </div>
     </div>
-  </section>
+  </header>
 
-  <!-- Gemeinde -->
-  <section id="gemeinde" class="section-card" data-aos="fade-up" data-aos-delay="100">
-    <h2 class="text-3xl font-bold text-emerald-600 mb-4">🏡 Wissenswertes über Mining</h2>
-    <p class="mb-6">Grenzgemeinde in Oberösterreich mit rund <strong>1.310</strong> Einwohnern und viel Engagement.</p>
-    <div class="grid md:grid-cols-3 gap-6">
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-xl transition" data-aos="zoom-in" data-aos-delay="200">
-        <h3 class="font-semibold mb-2">Infrastruktur</h3>
-        <span class="inline-block bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full mr-2 mb-2">Fläche: 16,5 km²</span>
-        <span class="inline-block bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full mr-2 mb-2">See­höhe: 346 m</span>
-      </div>
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-xl transition" data-aos="zoom-in" data-aos-delay="250">
-        <h3 class="font-semibold mb-2">Bildung & Freizeit</h3>
-        <ul class="list-disc list-inside space-y-1">
-          <li>Kindergarten & Volksschule</li>
-          <li>SV Mining, Tennis, Wanderwege</li>
-        </ul>
-      </div>
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-xl transition" data-aos="zoom-in" data-aos-delay="300">
-        <h3 class="font-semibold mb-2">Ansprechpartner</h3>
-        <address class="not-italic leading-relaxed">
-          Gemeindeamt Mining<br>
-          Hofmark 19, 4962 Mining<br>
-          <a href="tel:+4377237055" class="text-emerald-500">+43 7723 7055</a><br>
-          <a href="mailto:gemeinde@mining.ooe.gv.at" class="text-emerald-500">gemeinde@mining.ooe.gv.at</a>
-        </address>
-      </div>
-    </div>
-  </section>
-
-  <!-- Countdown -->
-  <section id="service" class="section-card" data-aos="fade-up" data-aos-delay="200">
-    <h2 class="text-3xl font-bold text-emerald-600 mb-4">🎉 Countdown Konzert</h2>
-    <div class="flex space-x-6 justify-center text-center font-mono" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="800">
-      <div><span class="text-2xl" x-text="countdown.days"></span><br>Tage</div>
-      <div><span class="text-2xl" x-text="countdown.hours"></span><br>Std</div>
-      <div><span class="text-2xl" x-text="countdown.minutes"></span><br>Min</div>
-      <div><span class="text-2xl" x-text="countdown.seconds"></span><br>Sek</div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="section-card" data-aos="fade-up" data-aos-delay="300">
-    <h2 class="text-3xl font-bold text-emerald-600 mb-4">❓ FAQ</h2>
-    <div class="space-y-4">
-      <template x-for="(item,i) in [{q:'Ist WLAN verfügbar?',a:'Ja, kostenlos am Kiosk.'},{q:'Liegestühle mietbar?',a:'2 €/Stück.'}]" :key="i">
-        <div x-data="{open:false}" class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
-          <button @click="open=!open" class="w-full flex justify-between p-4">
-            <span x-text="item.q"></span>
-            <svg :class="{'rotate-180':open}" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </button>
-          <div x-show="open" x-transition class="p-4 bg-gray-50 dark:bg-gray-900">
-            <p x-text="item.a"></p>
-          </div>
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 py-12">
+    <!-- Badesee Section -->
+    <section id="badesee" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+      <h2 class="text-3xl font-bold text-emerald-500 mb-4">🏖️ Öffnungszeiten & Preise</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-2">Öffnungszeiten</h3>
+          <p>Täglich: <strong>08:00 – 21:00 Uhr</strong></p>
+          <p>Kiosk: <strong>10:00 – 18:00 Uhr</strong></p>
         </div>
-      </template>
-    </div>
-  </section>
+        <div>
+          <h3 class="text-xl font-semibold mb-2">Eintrittspreise</h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li>Erwachsene: <strong>4 €</strong></li>
+            <li>Kinder: <strong>2 €</strong></li>
+            <li>Familienkarte: <strong>9 €</strong></li>
+            <li>Ab 18 Uhr: <strong>Eintritt frei</strong></li>
+          </ul>
+        </div>
+      </div>
+      <p class="mt-4 text-sm text-gray-500">Besucher seit 2025: <span id="counter">...</span></p>
+    </section>
 
-  <!-- Galerie -->
-  <section id="gallery" class="section-card" data-aos="fade-up" data-aos-delay="400">
-    <h2 class="text-3xl font-bold text-emerald-600 mb-4">📸 Galerie</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <img src="https://i.imgur.com/mTge2vJ.png" alt="See" class="rounded-lg hover:scale-105 transition shadow">
-      <img src="https://i.imgur.com/A7iVWdu.png" alt="Strand" class="rounded-lg hover:scale-105 transition shadow">
-      <img src="https://i.imgur.com/fx26LgY.png" alt="Wasser" class="rounded-lg hover:scale-105 transition shadow">
-      <img src="https://i.imgur.com/UXIuCj0.jpeg" alt="Sommer" class="rounded-lg hover:scale-105 transition shadow">
-    </div>
-  </section>
+    <!-- Gemeinde Section -->
+    <section id="gemeinde" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+      <h2 class="text-3xl font-bold text-emerald-500 mb-4">🏡 Wissenswertes über Mining</h2>
+      <p>Mining ist eine Grenzgemeinde in Oberösterreich mit rund <strong>1.310</strong> Einwohnern und viel Engagement.</p>
+      <div class="mt-6 grid md:grid-cols-3 gap-8">
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Infrastruktur</h3>
+          <span class="inline-block bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full mr-2 mb-2">Fläche: 16,5 km²</span>
+          <span class="inline-block bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full mr-2 mb-2">See­höhe: 346 m</span>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Bildung & Freizeit</h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li>Kindergarten & Volksschule</li>
+            <li>SV Mining, Tennis, Wanderwege</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Ansprechpartner</h3>
+          <p>Gemeindeamt Mining<br>Hofmark 19, 4962 Mining</p>
+          <p><a href="tel:+4377237055" class="text-emerald-400">+43 7723 7055</a><br><a href="mailto:gemeinde@mining.ooe.gv.at" class="text-emerald-400">gemeinde@mining.ooe.gv.at</a></p>
+        </div>
+      </div>
+    </section>
 
-  <!-- Anfahrt & Wetter -->
-  <section id="map" class="section-card" data-aos="fade-up" data-aos-delay="500">
-    <h2 class="text-3xl font-bold text-emerald-600 mb-4">📍 Anfahrt & Wetter</h2>
-    <div class="space-y-4">
-      <iframe src="https://maps.google.com/maps?q=48.2720128625,13.193072811&z=15&output=embed" class="w-full h-64 rounded-lg shadow-inner" allowfullscreen loading="lazy"></iframe>
-      <a class="weatherwidget-io" href="https://forecast7.com/de/48d27n13d19/mining/" data-label_1="MINING" data-label_2="WETTER" data-theme="original">MINING WETTER</a>
-      <script defer src="https://weatherwidget.io/js/widget.min.js"></script>
-    </div>
-  </section>
-</main>
+    <!-- Service Section -->
+    <section id="service" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+      <h2 class="text-3xl font-bold text-emerald-500 mb-4">🎉 Veranstaltungen &amp; Services</h2>
+      <ul class="list-decimal list-inside space-y-2">
+        <li>01.08.2025: Konzert „Stimmen aus OÖ“ in Mamling</li>
+        <li>Sommer 2025: Big-Bag-Sammlung im ASZ Braunau</li>
+        <li>PV-Förderung: bis 300 € / Batteriespeicher 200 €</li>
+      </ul>
+    </section>
 
-<!-- Back to Top -->
-<button x-show="showTop" @click="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 p-3 bg-emerald-500 text-white rounded-full shadow-lg transition" x-transition>↑</button>
+    <!-- Gallery Section -->
+    <section id="gallery" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+      <h2 class="text-3xl font-bold text-emerald-500 mb-4">📸 Impressionen</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <img src="https://i.imgur.com/mTge2vJ.png" alt="Luftaufnahme Badesee" class="rounded-lg object-cover w-full h-32 md:h-48" loading="lazy">
+        <img src="https://i.imgur.com/A7iVWdu.png" alt="Strand" class="rounded-lg object-cover w-full h-32 md:h-48" loading="lazy">
+        <img src="https://i.imgur.com/fx26LgY.png" alt="Wasser" class="rounded-lg object-cover w-full h-32 md:h-48" loading="lazy">
+        <img src="https://i.imgur.com/UXIuCj0.jpeg" alt="Sommer" class="rounded-lg object-cover w-full h-32 md:h-48" loading="lazy">
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
+    &copy; 2025 Gundhollinger Badesee &amp; Gemeinde Mining – Design &amp; Code: 52Romann
+  </footer>
+
+  <!-- Besucherzähler -->
+  <script defer src="https://api.countapi.xyz/hit/gundhollinger-badesee.cc/mining?callback=updateCounter"></script>
+  <script>
+    function updateCounter(res) {
+      document.getElementById('counter').textContent = res.value;
+    }
+  </script>
 
 </body>
 </html>
