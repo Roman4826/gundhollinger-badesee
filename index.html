@@ -9,28 +9,42 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Alpine.js für Interaktivität -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- AOS für Scroll-Animationen -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
   <style>
-    /* Scrollbar stilisieren */
+    /* Scrollbar */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background-color: rgba(100, 100, 100, 0.4); border-radius: 4px; }
+    /* Scroll Progress Bar */
+    #progressBar { position: fixed; top: 0; left: 0; height: 4px; background: #10B981; width: 0%; z-index: 50; }
+    /* Typewriter */
+    .typewriter h1 { overflow: hidden; border-right: .15em solid #fff; white-space: nowrap; animation: typing 3s steps(30, end), blink-caret .75s step-end infinite; }
+    @keyframes typing { from { width: 0; } to { width: 100%; } }
+    @keyframes blink-caret { from, to { border-color: transparent; } 50% { border-color: #fff; } }
+    /* Flip Card */
+    .flip-card { perspective: 1000px; }
+    .flip-card-inner { transition: transform .6s; transform-style: preserve-3d; }
+    .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { backface-visibility: hidden; position: absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+    .flip-card-back { transform: rotateY(180deg); }
   </style>
 </head>
-<body x-data="{ mobileMenuOpen: false, darkMode: false }" :class="{ 'dark': darkMode }" class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
+<body x-data="{ mobileMenuOpen:false, darkMode:false }" :class="{ 'dark':darkMode }" class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
 
-  <!-- Dark Mode Toggle -->
-  <button @click="darkMode = !darkMode" class="fixed bottom-4 right-4 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg z-50">
-    <svg x-show="!darkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a.75.75 0 01.75.75V4a.75.75 0 01-1.5 0V2.75A.75.75 0 0110 2zm5.657 2.343a.75.75 0 011.06 1.06l-.884.884a.75.75 0 01-1.06-1.06l.884-.884zM18 9.25a.75.75 0 010 1.5h-1.25a.75.75 0 010-1.5H18zM15.657 14.657a.75.75 0 00-1.06 1.06l.884.884a.75.75 0 001.06-1.06l-.884-.884zM10 15a3 3 0 100-6 3 3 0 000 6zm-5.657-.343a.75.75 0 00-1.06 1.06l.884.884a.75.75 0 001.06-1.06l-.884-.884zM3 10.75a.75.75 0 000-1.5H1.75a.75.75 0 000 1.5H3zM4.343 5.343a.75.75 0 011.06 1.06l-.884.884a.75.75 0 01-1.06-1.06l.884-.884z"/></svg>
-    <svg x-show="darkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8 8 0 1010.586 10.586z"/></svg>
+  <!-- Progress Bar -->
+  <div id="progressBar"></div>
+
+  <!-- Dark Mode -->
+  <button @click="darkMode = !darkMode" class="fixed bottom-4 right-4 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg z-50 transform hover:scale-110 transition">
+    <svg x-show="!darkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a.75.75 0 01.75.75V4..."/></svg>
+    <svg x-show="darkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293..."/></svg>
   </button>
 
-  <!-- Navigation -->
-  <nav class="bg-white dark:bg-gray-800 shadow sticky top-0 z-40" x-data>
+  <!-- Nav -->
+  <nav class="bg-white dark:bg-gray-800 shadow sticky top-0 z-40" x-data data-aos="fade-down">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-      <a href="#" class="flex items-center text-2xl font-bold text-emerald-600 dark:text-emerald-300">
-        <span class="mr-2">🏖️</span>Badesee
-      </a>
-      <!-- Desktop Menu -->
+      <a href="#" class="flex items-center text-2xl font-bold text-emerald-600 dark:text-emerald-300"><span class="mr-2">🏖️</span>Badesee</a>
       <ul class="hidden md:flex space-x-6 text-sm">
         <li><a href="#badesee" class="hover:text-emerald-500">Badesee</a></li>
         <li><a href="#gemeinde" class="hover:text-emerald-500">Gemeinde</a></li>
@@ -38,120 +52,108 @@
         <li><a href="#gallery" class="hover:text-emerald-500">Galerie</a></li>
         <li><a href="https://www.google.com/maps?q=48.2720128625,13.193072811" target="_blank" class="hover:text-emerald-500">Besuchen</a></li>
       </ul>
-      <!-- Mobile Hamburger -->
-      <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-md focus:outline-none focus:ring">
-        <svg x-show="!mobileMenuOpen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        <svg x-show="mobileMenuOpen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      <button @click="mobileMenuOpen=!mobileMenuOpen" class="md:hidden p-2 rounded-md focus:outline-none focus:ring transform hover:rotate-90 transition">
+        <svg x-show="!mobileMenuOpen" class="h-6 w-6" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg x-show="mobileMenuOpen" class="h-6 w-6" stroke="currentColor"><path d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
-    <!-- Mobile Menu -->
     <div x-show="mobileMenuOpen" x-transition class="md:hidden bg-white dark:bg-gray-800">
-      <ul class="px-6 pt-4 pb-6 space-y-4 text-lg">
-        <li><a href="#badesee" class="block">Badesee</a></li>
-        <li><a href="#gemeinde" class="block">Gemeinde</a></li>
-        <li><a href="#service" class="block">Service</a></li>
-        <li><a href="#gallery" class="block">Galerie</a></li>
-        <li><a href="https://www.google.com/maps?q=48.2720128625,13.193072811" target="_blank" class="block">Besuchen</a></li>
+      <ul class="px-6 py-4 space-y-4 text-lg">
+        <li><a href="#badesee">Badesee</a></li>
+        <li><a href="#gemeinde">Gemeinde</a></li>
+        <li><a href="#service">Service</a></li>
+        <li><a href="#gallery">Galerie</a></li>
+        <li><a href="https://www.google.com/maps?q=48.272...">Besuchen</a></li>
       </ul>
     </div>
   </nav>
 
   <!-- Hero -->
-  <header class="relative h-screen bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1627398242331-96d3ad1276f0');">
+  <header class="relative h-screen bg-cover bg-center bg-fixed" style="background-image:url('https://images.unsplash.com/photo-1627398242331-96d3ad1276f0');" data-aos="zoom-in">
     <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-    <div class="relative flex flex-col items-center justify-center h-full text-center px-4">
+    <div class="relative flex flex-col items-center justify-center h-full text-center px-4 typewriter">
       <h1 class="text-4xl sm:text-6xl font-extrabold text-white mb-4">Sommerliche Auszeit am<br><span class="text-emerald-300">Gundhollinger Badesee</span></h1>
-      <p class="text-lg text-gray-200 mb-8">Erlebe Sonne, Spaß &amp; Naturidylle in Mining, Bezirk Braunau am Inn.</p>
+      <p class="text-lg text-gray-200 mb-8" data-aos="fade-up" data-aos-delay="400">Erlebe Sonne, Spaß &amp; Naturidylle in Mining.</p>
       <div class="space-x-4">
-        <a href="#badesee" class="px-6 py-3 bg-emerald-500 text-white font-semibold rounded-full hover:bg-emerald-600 transition">Entdecken</a>
-        <a href="https://www.google.com/maps?q=48.2720128625,13.193072811" target="_blank" class="px-6 py-3 border border-white text-white font-semibold rounded-full hover:bg-white hover:text-gray-800 transition">Besuchen</a>
+        <a href="#badesee" class="px-6 py-3 bg-emerald-500 text-white rounded-full transform hover:scale-105 animate-bounce transition" data-aos="zoom-in" data-aos-delay="600">Entdecken</a>
+        <a href="https://www.google.com/maps?q=48.2720128625,13.193072811" target="_blank" class="px-6 py-3 border border-white text-white rounded-full transform hover:-translate-y-1 transition" data-aos="zoom-in" data-aos-delay="800">Besuchen</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 py-12">
-    <!-- Badesee Section -->
-    <section id="badesee" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+    <!-- Badesee -->
+    <section id="badesee" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8" data-aos="fade-up">
       <h2 class="text-3xl font-bold text-emerald-500 mb-4">🏖️ Öffnungszeiten & Preise</h2>
       <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="text-xl font-semibold mb-2">Öffnungszeiten</h3>
-          <p>Täglich: <strong>08:00 – 21:00 Uhr</strong></p>
-          <p>Kiosk: <strong>10:00 – 18:00 Uhr</strong></p>
-        </div>
-        <div>
-          <h3 class="text-xl font-semibold mb-2">Eintrittspreise</h3>
-          <ul class="list-disc list-inside space-y-1">
-            <li>Erwachsene: <strong>4 €</strong></li>
-            <li>Kinder: <strong>2 €</strong></li>
-            <li>Familienkarte: <strong>9 €</strong></li>
-            <li>Ab 18 Uhr: <strong>Eintritt frei</strong></li>
-          </ul>
-        </div>
+        <div><h3 class="text-xl font-semibold">Öffnungszeiten</h3><p>Täglich: <strong>08:00–21:00</strong></p><p>Kiosk: <strong>10:00–18:00</strong></p></div>
+        <div><h3 class="text-xl font-semibold">Preise</h3><ul class="list-disc list-inside"><li>Erwachsene: 4&nbsp;€</li><li>Kinder: 2&nbsp;€</li><li>Familie: 9&nbsp;€</li><li>ab 18&nbsp;Uhr frei</li></ul></div>
       </div>
-      <p class="mt-4 text-sm text-gray-500">Besucher seit 2025: <span id="counter">...</span></p>
+      <p class="mt-4 text-sm text-gray-500">Besucher seit 2025: <span id="counter" data-target="12345">0</span></p>
     </section>
 
-    <!-- Gemeinde Section -->
-    <section id="gemeinde" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
-      <h2 class="text-3xl font-bold text-emerald-500 mb-4">🏡 Wissenswertes über Mining</h2>
-      <p>Mining ist eine Grenzgemeinde in Oberösterreich mit rund <strong>1.310</strong> Einwohnern und viel Engagement.</p>
-      <div class="mt-6 grid md:grid-cols-3 gap-8">
-        <div>
-          <h3 class="font-semibold text-lg mb-2">Infrastruktur</h3>
-          <span class="inline-block bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full mr-2 mb-2">Fläche: 16,5 km²</span>
-          <span class="inline-block bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full mr-2 mb-2">See­höhe: 346 m</span>
-        </div>
-        <div>
-          <h3 class="font-semibold text-lg mb-2">Bildung & Freizeit</h3>
-          <ul class="list-disc list-inside space-y-1">
-            <li>Kindergarten & Volksschule</li>
-            <li>SV Mining, Tennis, Wanderwege</li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="font-semibold text-lg mb-2">Ansprechpartner</h3>
-          <p>Gemeindeamt Mining<br>Hofmark 19, 4962 Mining</p>
-          <p><a href="tel:+4377237055" class="text-emerald-400">+43 7723 7055</a><br><a href="mailto:gemeinde@mining.ooe.gv.at" class="text-emerald-400">gemeinde@mining.ooe.gv.at</a></p>
-        </div>
+    <!-- Gemeinde -->
+    <section id="gemeinde" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 grid md:grid-cols-3 gap-6" data-aos="fade-up" data-aos-delay="200">
+      <div class="flip-card bg-emerald-200 dark:bg-emerald-700 rounded-2xl p-6 h-40 relative">
+        <div class="flip-card-inner"><div class="flip-card-front">Infrastruktur</div><div class="flip-card-back bg-white dark:bg-gray-800 p-4 rounded-2xl">Fläche: 16,5 km²<br>Seehöhe: 346 m</div></div>
+      </div>
+      <div class="flip-card bg-emerald-200 dark:bg-emerald-700 rounded-2xl p-6 h-40 relative">
+        <div class="flip-card-inner"><div class="flip-card-front">Bildung & Freizeit</div><div class="flip-card-back bg-white dark:bg-gray-800 p-4 rounded-2xl">Kindergarten & Volksschule<br>SV Mining, Tennis, Wanderwege</div></div>
+      </div>
+      <div class="flip-card bg-emerald-200 dark:bg-emerald-700 rounded-2xl p-6 h-40 relative">
+        <div class="flip-card-inner"><div class="flip-card-front">Kontakt</div><div class="flip-card-back bg-white dark:bg-gray-800 p-4 rounded-2xl">Gemeindeamt Mining<br>+43 7723 7055</div></div>
       </div>
     </section>
 
-    <!-- Service Section -->
-    <section id="service" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
-      <h2 class="text-3xl font-bold text-emerald-500 mb-4">🎉 Veranstaltungen &amp; Services</h2>
+    <!-- Service -->
+    <section id="service" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8" data-aos="fade-up" data-aos-delay="400">
+      <h2 class="text-3xl font-bold text-emerald-500 mb-4">🎉 Veranstaltungen & Services</h2>
       <ul class="list-decimal list-inside space-y-2">
-        <li>01.08.2025: Konzert „Stimmen aus OÖ“ in Mamling</li>
-        <li>Sommer 2025: Big-Bag-Sammlung im ASZ Braunau</li>
-        <li>PV-Förderung: bis 300 € / Batteriespeicher 200 €</li>
+        <li class="transform hover:translate-x-2 transition">01.08.2025: Konzert „Stimmen aus OÖ“</li>
+        <li class="transform hover:translate-x-2 transition">Sommer 2025: Big-Bag-Sammlung</li>
+        <li class="transform hover:translate-x-2 transition">PV-Förderung: bis 300 €</li>
       </ul>
     </section>
 
-    <!-- Gallery Section -->
-    <section id="gallery" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
-      <h2 class="text-3xl font-bold text-emerald-500 mb-4">📸 Impressionen</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <img src="https://i.imgur.com/mTge2vJ.png" alt="Luftaufnahme Badesee" class="rounded-lg object-cover w-full h-32 md:h-48" loading="lazy">
-        <img src="https://i.imgur.com/A7iVWdu.png" alt="Strand" class="rounded-lg object-cover w-full h-32 md:h-48" loading="lazy">
-        <img src="https://i.imgur.com/fx26LgY.png" alt="Wasser" class="rounded-lg object-cover w-full h-32 md:h-48" loading="lazy">
-        <img src="https://i.imgur.com/UXIuCj0.jpeg" alt="Sommer" class="rounded-lg object-cover w-full h-32 md:h-48" loading="lazy">
-      </div>
+    <!-- Galerie -->
+    <section id="gallery" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 grid grid-cols-2 md:grid-cols-4 gap-4" data-aos="fade-up" data-aos-delay="600">
+      <img src="https://i.imgur.com/mTge2vJ.png" alt="Luftaufnahme" class="rounded-lg object-cover h-48 w-full transform hover:scale-110 transition" />
+      <img src="https://i.imgur.com/A7iVWdu.png" alt="Strand" class="rounded-lg object-cover h-48 w-full transform hover:scale-110 transition" />
+      <img src="https://i.imgur.com/fx26LgY.png" alt="Wasser" class="rounded-lg object-cover h-48 w-full transform hover:scale-110 transition" />
+      <img src="https://i.imgur.com/UXIuCj0.jpeg" alt="Sommer" class="rounded-lg object-cover h-48 w-full transform hover:scale-110 transition" />
     </section>
-
   </main>
 
   <!-- Footer -->
-  <footer class="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
-    &copy; 2025 Gundhollinger Badesee &amp; Gemeinde Mining – Design &amp; Code: 52Romann
+  <footer class="relative text-center py-6 bg-white dark:bg-gray-800">
+    <div class="absolute top-0 left-0 w-full overflow-hidden rotate-180 leading-none">
+      <svg viewBox="0 0 1200 100" preserveAspectRatio="none" class="w-full h-20"><path d="M0,0 C600,100 600,0 1200,100 L1200,0 L0,0 Z" fill="#10B981" /></svg>
+    </div>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-8">&copy; 2025 Gundhollinger Badesee & Gemeinde Mining</p>
   </footer>
 
-  <!-- Besucherzähler -->
-  <script defer src="https://api.countapi.xyz/hit/gundhollinger-badesee.cc/mining?callback=updateCounter"></script>
+  <!-- Scripts -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    function updateCounter(res) {
-      document.getElementById('counter').textContent = res.value;
-    }
+    AOS.init({ once:true, duration:800 });
+    window.addEventListener('scroll', () => {
+      const scroll = window.scrollY;
+      const height = document.body.scrollHeight - window.innerHeight;
+      document.getElementById('progressBar').style.width = (scroll/height*100) + '%';
+    });
+    const counterEl = document.getElementById('counter');
+    let counted = false;
+    window.addEventListener('scroll', () => {
+      if (counterEl && !counted && typeof counterEl.getBoundingClientRect === 'function' && counterEl.getBoundingClientRect().top < window.innerHeight) {
+        counted = true;
+        const target = parseInt(counterEl.dataset.target, 10) || 0;
+        let i = 0;
+        const interval = setInterval(() => {
+          counterEl.textContent = i++;
+          if (i > target) clearInterval(interval);
+        }, 10);
+      }
+    });
   </script>
-
 </body>
 </html>
